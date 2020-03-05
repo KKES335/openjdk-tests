@@ -20,58 +20,17 @@ FULLLANG=${OS}_${LANG%.*}.${LOC}
 
 . ${BASE}/check_env_unix.sh
 
-cp ${BASE}/*.java .
+if [ "${BASE}" != "${PWD}" ]; then
+  cp ${BASE}/*.java .
+fi
 
 CP="-cp ${BASE}/annotation.jar"
 
 TS=`${JAVA_BIN}/java ${CP} CheckValidData "${TEST_STRINGS}"`
 
 echo "creating source file..."
-# sed "s/TEST_STRING/${TS}/g" DefineAnnotation_org.java > DefineAnnotation.java
-cat > DefineAnnotation.java <<EOF
-@interface ${TS}
-{
-    String ${TS}_2();
-    int ${TS}_1();
-}
-@interface ${TS}_constructor
-{
-    String value();
-}
-@interface ${TS}_method
-{
-    String value();
-}
-@interface ${TS}_field
-{
-    String value();
-}
-EOF
-
-#sed "s/TEST_STRING/${TS}/g"  AnnotatedTest_org.java >  AnnotatedTest.java
-cat > AnnotatedTest.java <<EOF
-@${TS}(
-    ${TS}_1 = 1234567890,
-    ${TS}_2 = "${TS}"
-)
-public class AnnotatedTest{
-    @${TS}_constructor("${TS}") 
-        public AnnotatedTest(){
-    }
-
-    // Annotated Methods
-    @${TS}_method("${TS}_1") 
-    public void ${TS}_1(){}
-    @${TS}_method("${TS}_2")
-    public  void ${TS}_2(){}
-
-    // Annotated Fields
-    @${TS}_field("${TS}_1") 
-    public String ${TS}_1 = "${TS}";
-    @${TS}_field("${TS}_2")
-    public int ${TS}_2 = 0;
-}
-EOF
+sed "s/TEST_STRING/${TS}/g" DefineAnnotation_org.java > DefineAnnotation.java
+sed "s/TEST_STRING/${TS}/g"  AnnotatedTest_org.java >  AnnotatedTest.java
 
 SDKPATH=`${JAVA_BIN}/java ${CP} SDKPath`
 
